@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Fiction Zone — Where Imagination Lives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f0e8;
+    --cream: #ede8d8;
+    --blood: #8b1a1a;
+    --gold: #c9a84c;
+    --ghost: #a8b8c8;
+    --dim: #2a2a2a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-trail {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: left 0.1s ease, top 0.1s ease;
+    opacity: 0.4;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9000;
+    opacity: 0.35;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    background: rgba(13,13,13,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--paper);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; color: var(--gold); }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(139,26,26,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 80% at 10% 80%, rgba(201,168,76,0.06) 0%, transparent 50%);
+  }
+  .hero-rule {
+    width: 80px;
+    height: 2px;
+    background: var(--gold);
+    margin-bottom: 2rem;
+    animation: expand 1s ease forwards;
+  }
+  @keyframes expand { from { width: 0; } to { width: 80px; } }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--blood);
+  }
+  .hero-title .gold { color: var(--gold); }
+  .hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(245,240,232,0.6);
+    max-width: 520px;
+    margin: 2rem 0 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .hero-quote {
+    border-left: 2px solid var(--gold);
+    padding-left: 1.5rem;
+    max-width: 600px;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: rgba(245,240,232,0.75);
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .hero-quote cite {
+    display: block;
+    font-style: normal;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    margin-top: 0.8rem;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 3.5rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    transition: all 0.25s;
+    cursor: none;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--ink);
+    border: 1px solid var(--gold);
+  }
+  .btn-primary:hover { background: transparent; color: var(--gold); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--paper);
+    border: 1px solid rgba(245,240,232,0.3);
+  }
+  .btn-ghost:hover { border-color: var(--paper); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 3rem;
+    left: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: rgba(245,240,232,0.4);
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+  }
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: rgba(245,240,232,0.3);
+    animation: scrollPulse 2s ease-in-out 1.5s infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { width: 40px; opacity: 0.3; }
+    50% { width: 60px; opacity: 0.8; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ─── SECTIONS ─── */
+  section {
+    padding: 6rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ─── ABOUT ─── */
+  #about {
+    border-top: 1px solid rgba(245,240,232,0.08);
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+  .about-body p {
+    color: rgba(245,240,232,0.8);
+    margin-bottom: 1.4rem;
+    font-size: 1.05rem;
+  }
+  .about-body strong {
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .about-sidebar {
+    padding: 2.5rem;
+    border: 1px solid rgba(201,168,76,0.2);
+    position: relative;
+  }
+  .about-sidebar::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: var(--gold);
+    opacity: 0.08;
+    position: absolute;
+    top: -2rem;
+    left: 1rem;
+    line-height: 1;
+  }
+  .manifesto-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgba(245,240,232,0.06);
+  }
+  .manifesto-item:last-child { border-bottom: none; }
+  .manifesto-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    padding-top: 0.3rem;
+    flex-shrink: 0;
+  }
+  .manifesto-text {
+    font-size: 0.95rem;
+    color: rgba(245,240,232,0.75);
+    font-style: italic;
+  }
+
+  /* ─── CATEGORIES ─── */
+  #explore {
+    border-top: 1px solid rgba(245,240,232,0.08);
+  }
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 3rem;
+    background: rgba(245,240,232,0.06);
+  }
+  .category-card {
+    background: var(--ink);
+    padding: 3rem 2.5rem;
+    text-decoration: none;
+    color: var(--paper);
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .category-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .category-card.satire::before { background: radial-gradient(ellipse at center, rgba(201,168,76,0.08), transparent 70%); }
+  .category-card.horror::before { background: radial-gradient(ellipse at center, rgba(139,26,26,0.12), transparent 70%); }
+  .category-card.scifi::before { background: radial-gradient(ellipse at center, rgba(168,184,200,0.08), transparent 70%); }
+  .category-card:hover::before { opacity: 1; }
+  .category-card:hover { background: rgba(255,255,255,0.02); }
+
+  .cat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    display: block;
+    transition: transform 0.3s;
+  }
+  .category-card:hover .cat-icon { transform: scale(1.1) rotate(-5deg); }
+  .cat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .cat-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .cat-desc {
+    font-size: 0.95rem;
+    color: rgba(245,240,232,0.6);
+    line-height: 1.7;
+  }
+  .cat-arrow {
+    display: inline-block;
+    margin-top: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.3s;
+  }
+  .category-card:hover .cat-arrow { opacity: 1; transform: translateX(0); }
+
+  /* ─── SATIRE PAGE ─── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .stories-header {
+    padding: 8rem 3rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-bottom: 1px solid rgba(245,240,232,0.08);
+  }
+  .stories-header .breadcrumb {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: rgba(245,240,232,0.4);
+    margin-bottom: 1.5rem;
+  }
+  .stories-header .breadcrumb a {
+    color: var(--gold);
+    text-decoration: none;
+    cursor: none;
+  }
+  .stories-header .breadcrumb a:hover { text-decoration: underline; }
+
+  .stories-list {
+    padding: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .story-entry {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid rgba(245,240,232,0.06);
+    cursor: none;
+    transition: padding-left 0.3s;
+  }
+  .story-entry:hover { padding-left: 0.5rem; }
+  .story-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(201,168,76,0.2);
+    line-height: 1;
+  }
+  .story-info { }
+  .story-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .story-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .story-title:hover { color: var(--gold); }
+  .story-excerpt {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: rgba(245,240,232,0.55);
+    line-height: 1.6;
+  }
+  .story-read {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid rgba(201,168,76,0.3);
+    transition: all 0.2s;
+    cursor: none;
+    background: none;
+    margin-top: 0.5rem;
+  }
+  .story-read:hover {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+
+  /* ─── ARTICLE VIEW ─── */
+  .article-view {
+    padding: 8rem 3rem 6rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .article-view .breadcrumb {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: rgba(245,240,232,0.4);
+    margin-bottom: 2rem;
+  }
+  .article-view .breadcrumb a { color: var(--gold); text-decoration: none; cursor: none; }
+  .article-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--blood);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .article-tag::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--blood);
+  }
+  .article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(245,240,232,0.08);
+    border-bottom: 1px solid rgba(245,240,232,0.08);
+    margin-bottom: 3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.4);
+  }
+  .article-body {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: rgba(245,240,232,0.85);
+  }
+  .article-body p { margin-bottom: 1.8rem; }
+  .article-body .drop-cap::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    padding-right: 0.1em;
+    padding-top: 0.15em;
+    color: var(--gold);
+  }
+  .article-body blockquote {
+    border-left: 3px solid var(--gold);
+    padding: 1rem 2rem;
+    margin: 2.5rem 0;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: rgba(245,240,232,0.7);
+    background: rgba(201,168,76,0.04);
+  }
+
+  /* ─── OPERATION HUMANITY ─── */
+  .op-humanity-header {
+    padding: 8rem 3rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .op-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(168,184,200,0.07) 0%, transparent 60%);
+  }
+  .rablox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    padding: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .char-card {
+    padding: 2.5rem;
+    border: 1px solid rgba(168,184,200,0.15);
+    position: relative;
+    background: rgba(168,184,200,0.03);
+    transition: border-color 0.3s;
+  }
+  .char-card:hover { border-color: rgba(168,184,200,0.4); }
+  .char-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    color: var(--ghost);
+    margin-bottom: 1.5rem;
+  }
+  .char-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-bottom: 0.3rem;
+  }
+  .char-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .char-desc {
+    font-size: 0.95rem;
+    color: rgba(245,240,232,0.65);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ─── CONTACT ─── */
+  #contact-section {
+    border-top: 1px solid rgba(245,240,232,0.08);
+    background: rgba(245,240,232,0.02);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    margin-top: 3rem;
+  }
+  .contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid rgba(245,240,232,0.06);
+  }
+  .contact-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .contact-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+  }
+  .contact-value a {
+    color: var(--paper);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+  }
+  .contact-value a:hover { color: var(--gold); }
+  .contact-cta-box {
+    padding: 3rem;
+    border: 1px solid rgba(201,168,76,0.2);
+    background: rgba(201,168,76,0.03);
+  }
+  .contact-cta-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  .contact-cta-box p {
+    font-size: 0.95rem;
+    color: rgba(245,240,232,0.65);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 3rem;
+    border-top: 1px solid rgba(245,240,232,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.25);
+  }
+  footer a { color: rgba(245,240,232,0.4); text-decoration: none; cursor: none; }
+  footer a:hover { color: var(--gold); }
+
+  /* ─── DIVIDER ─── */
+  .ornament {
+    text-align: center;
+    color: var(--gold);
+    opacity: 0.3;
+    font-size: 1.2rem;
+    letter-spacing: 1rem;
+    margin: 2rem 0;
+  }
+
+  /* ─── HORROR BG ─── */
+  .horror-accent { color: var(--blood); }
+  .scifi-accent { color: var(--ghost); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+    .nav-links a { font-size: 0.6rem; }
+    section, .stories-header, .stories-list, .article-view,
+    .op-humanity-header, .rablox-grid { padding-left: 1.5rem; padding-right: 1.5rem; }
+    #hero { padding: 7rem 1.5rem 3rem; }
+    .about-grid, .categories-grid, .contact-grid, .rablox-grid { grid-template-columns: 1fr; }
+    .categories-grid { gap: 0.5px; }
+    .story-entry { grid-template-columns: 50px 1fr; }
+    .story-entry > *:last-child { grid-column: 2; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    body { cursor: auto; }
+    .cursor, .cursor-trail { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- ─── NAVIGATION ─── -->
+<nav>
+  <a href="#" class="nav-logo" onclick="showPage('home'); return false;">MR. FICTION ZONE</a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home'); return false;">Home</a></li>
+    <li><a href="#" onclick="showPage('home'); scrollToSection('about'); return false;">About</a></li>
+    <li><a href="#" onclick="showPage('satire'); return false;">Satire</a></li>
+    <li><a href="#" onclick="showPage('horror'); return false;">Horror</a></li>
+    <li><a href="#" onclick="showPage('ophumanity'); return false;">Operation Humanity</a></li>
+    <li><a href="#" onclick="showPage('contact'); return false;">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section id="hero" style="padding-top:8rem;">
+    <div class="hero-bg"></div>
+    <div class="hero-eyebrow">Est. 2025 — An Independent Literary Space</div>
+    <h1 class="hero-title">
+      Mr.<br><em>Fiction</em><br><span class="gold">Zone.</span>
+    </h1>
+    <p class="hero-subtitle">Where raw imagination meets the written word. Horror, satire, sci-fi, and everything in between.</p>
+    <blockquote class="hero-quote">
+      "Every marvel you see today was once someone's imagination — raw, unfiltered and way ahead of times."
+      <cite>— The Mission Statement</cite>
+    </blockquote>
+    <div class="hero-cta">
+      <a href="#" class="btn btn-primary" onclick="showPage('explore-page'); return false;">Explore Stories</a>
+      <a href="#" class="btn btn-ghost" onclick="scrollToSection('about'); return false;">Our Manifesto</a>
+    </div>
+    <div class="hero-scroll">
+      <span class="scroll-line"></span>
+      SCROLL TO DISCOVER
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="reveal">
+    <div class="section-label">Our Story</div>
+    <h2 class="section-title">Born from a<br><em>teenager's dream.</em></h2>
+    <div class="about-grid">
+      <div class="about-body">
+        <p>This page is the dream of a teenager from a small town — an idea born from a deep love for words and stories. It's an attempt to bring together <strong>aspiring writers from around the world</strong>, creating a platform that celebrates free will, creativity, and imagination.</p>
+        <p>At the heart of this space is <strong>independent thinking</strong>. That's what we strive to nurture, one story at a time.</p>
+        <p>We live in the age of AI — a time when the internet is overflowing with recycled ideas and altered versions of once-original works. While technology has its place, it has also made it harder to find the raw, unfiltered voice of a human mind at work.</p>
+        <p><strong>Here, we take a different path.</strong> Every word you read on this platform is born from genuine human thought — crafted with intention, shaped by real emotions, and unpolished in all the ways that make writing truly alive.</p>
+        <p>We don't just want content. We want <strong>ideas</strong>. We want the spark that comes from a living, breathing person putting pen to paper and letting their mind roam free.</p>
+        <a href="#" class="btn btn-ghost" onclick="showPage('contact'); return false;" style="margin-top:1rem; display:inline-block;">Join the Community →</a>
+      </div>
+      <div class="about-sidebar reveal">
+        <p class="section-label" style="margin-bottom:1.5rem;">Our Manifesto</p>
+        <div class="manifesto-item">
+          <span class="manifesto-num">01</span>
+          <p class="manifesto-text">Every word must come from a real human mind — no recycled ideas, no AI filler.</p>
+        </div>
+        <div class="manifesto-item">
+          <span class="manifesto-num">02</span>
+          <p class="manifesto-text">Independent thinking is sacred. We nurture it, one story at a time.</p>
+        </div>
+        <div class="manifesto-item">
+          <span class="manifesto-num">03</span>
+          <p class="manifesto-text">Aspiring writers deserve a stage. This is that stage.</p>
+        </div>
+        <div class="manifesto-item">
+          <span class="manifesto-num">04</span>
+          <p class="manifesto-text">Imperfect, unpolished, honest — that's what makes writing truly alive.</p>
+        </div>
+        <div class="manifesto-item">
+          <span class="manifesto-num">05</span>
+          <p class="manifesto-text">Imagination is not obsolete. Here, it thrives.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORE -->
+  <section id="explore" style="padding-top:2rem;">
+    <div class="section-label">Categories</div>
+    <h2 class="section-title reveal">Dive into<br><em>other worlds.</em></h2>
+    <div class="categories-grid reveal">
+
+      <div class="category-card satire" onclick="showPage('satire')">
+        <span class="cat-icon">🥸</span>
+        <p class="cat-label">Category 01</p>
+        <h3 class="cat-title">#Satire</h3>
+        <p class="cat-desc">Sharp wit, biting commentary, and the kind of humour that makes you laugh — then think. If you understand satire, you're in the right place. If not, please don't sue us.</p>
+        <span class="cat-arrow">READ STORIES →</span>
+      </div>
+
+      <div class="category-card horror" onclick="showPage('horror')">
+        <span class="cat-icon">👻</span>
+        <p class="cat-label">Category 02</p>
+        <h3 class="cat-title"># Horror Stories</h3>
+        <p class="cat-desc">You have discovered a vault where whispers linger and shadows breathe. Expect tales that gnaw at your sleep and creatures that may appear uncomfortably familiar.</p>
+        <span class="cat-arrow">ENTER IF YOU DARE →</span>
+      </div>
+
+      <div class="category-card scifi" onclick="showPage('ophumanity')">
+        <span class="cat-icon">🤖</span>
+        <p class="cat-label">Category 03</p>
+        <h3 class="cat-title">#Operation Humanity</h3>
+        <p class="cat-desc">After Earth succumbs to humanity's cruelty, a new world called Rablox offers a second chance. But can we avoid repeating the same mistakes on a brand new planet?</p>
+        <span class="cat-arrow">EXPLORE RABLOX →</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT TEASER -->
+  <section id="contact-section" class="reveal" style="text-align:center;">
+    <div class="ornament">✦ ✦ ✦</div>
+    <h2 class="section-title" style="margin-bottom:1rem;">Got a story<br>to tell?</h2>
+    <p style="font-style:italic; color:rgba(245,240,232,0.6); max-width:480px; margin:0 auto 2.5rem;">Every great literary universe started with one person who dared to write. Share your ideas — we're listening.</p>
+    <a href="#" class="btn btn-primary" onclick="showPage('contact'); return false;">Get in Touch</a>
+  </section>
+
+</div>
+
+<!-- ══════════════ SATIRE PAGE ══════════════ -->
+<div id="page-satire" class="page">
+  <div class="stories-header">
+    <p class="breadcrumb"><a href="#" onclick="showPage('home'); return false;">Home</a> / #Satire</p>
+    <div class="section-label">Category 01</div>
+    <h1 class="section-title" style="font-family:'Playfair Display',serif; font-size:clamp(2.5rem,6vw,5rem);">
+      #Satire
+    </h1>
+    <p style="font-style:italic; color:rgba(245,240,232,0.55); max-width:560px; margin-top:1rem;">
+      "We invented smartphones to look smart, and social media to prove the opposite." If you understand satire, you are at the perfect place! but… if you don't, please don't sue me!
+    </p>
+  </div>
+  <div class="stories-list">
+
+    <div class="story-entry" onclick="showArticle('covid')">
+      <div class="story-num">01</div>
+      <div class="story-info">
+        <p class="story-tag">🤣 Satire · A Divine Request Series</p>
+        <h3 class="story-title">A Divine Request — COVID Edition</h3>
+        <p class="story-excerpt">Dear MAN, you have one notification from Lord Vishnu! @HINDUTV — What happens when the gods get fed up and decide to send a divine memo to humanity during a global pandemic?</p>
+      </div>
+      <button class="story-read">Read →</button>
+    </div>
+
+    <div class="story-entry" onclick="showArticle('chaos')">
+      <div class="story-num">02</div>
+      <div class="story-info">
+        <p class="story-tag">😂 Satire · A Divine Request Series</p>
+        <h3 class="story-title">A Divine Request — The Chaos Around</h3>
+        <p class="story-excerpt">It's 2025! And Lord Vishnu is back again! What message does he have this time? @HINDUTV — The sequel nobody asked for but everyone needed.</p>
+      </div>
+      <button class="story-read">Read →</button>
+    </div>
+
+    <div class="story-entry" onclick="showArticle('independence')">
+      <div class="story-num">03</div>
+      <div class="story-info">
+        <p class="story-tag">🇮🇳 Satire · A Divine Request Series</p>
+        <h3 class="story-title">A Divine Request — Indian Independence Day Special</h3>
+        <p class="story-excerpt">Lord Vishnu has a special wish for his exclusive members — Indians! What chaos will unfold now? @HINDUTV — A patriotic (and divine) mess.</p>
+      </div>
+      <button class="story-read">Read →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ ARTICLE PAGES ══════════════ -->
+<div id="page-article-covid" class="page">
+  <div class="article-view">
+    <p class="breadcrumb">
+      <a href="#" onclick="showPage('home'); return false;">Home</a> / 
+      <a href="#" onclick="showPage('satire'); return false;">#Satire</a> / 
+      A Divine Request — COVID Edition
+    </p>
+    <p class="article-tag">Satire · A Divine Request Series · Vol. 1</p>
+    <h1 class="article-title">A Divine Request — COVID Edition</h1>
+    <div class="article-meta">
+      <span>@HINDUTV</span>
+      <span>·</span>
+      <span>Satire</span>
+      <span>·</span>
+      <span>Mr. Fiction Zone</span>
+    </div>
+    <div class="article-body">
+      <p class="drop-cap">Dear MAN, you have one notification from Lord Vishnu. Please read carefully — this is not spam. The divine inbox rarely opens for mortals, and yet here we are.</p>
+      <blockquote>"It has come to our divine attention that the chaos currently unfolding on Earth is... unprecedented. Even by our standards."</blockquote>
+      <p>Lord Vishnu, seated atop his celestial throne, stared at the cosmic dashboard with an expression nobody had seen in millennia — bewilderment. The numbers were unusual. Temples empty, mosques silent, churches locked. For the first time in recorded divine history, humanity had collectively stopped arguing about <em>which</em> god to pray to and had united under one common enemy: a microscopic speck of protein.</p>
+      <p>"They are wearing masks," announced Garuda, peering through the celestial telescope. "Some on their faces. Some on their chins. A few on their foreheads. The creativity is admirable, though misguided."</p>
+      <p>The divine request was simple: stay home, stay safe, wash your hands. But the interpretation, as always with humans, was… creative. Some stockpiled toilet paper with the urgency of preparing for Armageddon. Others convinced themselves that a warm glass of turmeric milk was an antiviral shield. Social media pundits declared that 5G towers were to blame, apparently forgetting that conspiracy theories require at least a passing acquaintance with physics.</p>
+      <blockquote>"We sent a pause button," Vishnu reportedly told the assembled devas. "They are using it to bake sourdough bread and argue on the internet."</blockquote>
+      <p>And so it was written — in the divine ledger, in the chapter titled 'Humanity: An Ongoing Experiment' — that when the universe offered silence, man filled it with noise. When given rest, he invented stress. And when handed a pandemic, he somehow turned it into a political debate.</p>
+      <p>The gods, watching from above, did what gods do in times of profound confusion. They sighed. They marvelled. And somewhere, just between the galaxies, they quietly updated their notes: <em>"Still unpredictable. Strangely resilient. Do not delete."</em></p>
+      <div style="text-align:center; margin-top:3rem; color:var(--gold); opacity:0.5; letter-spacing:1rem;">✦ ✦ ✦</div>
+    </div>
+    <div style="margin-top:3rem;">
+      <a href="#" class="btn btn-ghost" onclick="showPage('satire'); return false;">← Back to Satire</a>
+    </div>
+  </div>
+</div>
+
+<div id="page-article-chaos" class="page">
+  <div class="article-view">
+    <p class="breadcrumb">
+      <a href="#" onclick="showPage('home'); return false;">Home</a> / 
+      <a href="#" onclick="showPage('satire'); return false;">#Satire</a> / 
+      A Divine Request — The Chaos Around
+    </p>
+    <p class="article-tag">Satire · A Divine Request Series · Vol. 2</p>
+    <h1 class="article-title">A Divine Request — The Chaos Around</h1>
+    <div class="article-meta">
+      <span>@HINDUTV</span>
+      <span>·</span>
+      <span>2025</span>
+      <span>·</span>
+      <span>Mr. Fiction Zone</span>
+    </div>
+    <div class="article-body">
+      <p class="drop-cap">It's 2025. Lord Vishnu is back. And this time, he's brought a PowerPoint presentation.</p>
+      <p>The Celestial Control Room, which had undergone a significant renovation since the pandemic years (they added a second screen — things had escalated), was buzzing. Celestial analysts pointed at graphs. The lines all trended in the same direction: chaotic, upward, and frankly alarming.</p>
+      <blockquote>"They survived the plague," said Narad Muni, scrolling through the divine news feed. "And then they immediately resumed everything that caused it."</blockquote>
+      <p>Slide one of Vishnu's presentation was titled: <em>"You Had One Job."</em></p>
+      <p>It was a busy year for humanity. Political theatre reached new heights — or rather depths — of spectacle. Wars that had been quietly simmering for decades suddenly demanded global attention simultaneously, as if they'd coordinated calendar entries. Economic systems creaked under the weight of choices made decades ago. Social media algorithms cheerfully fed everyone information specifically designed to confirm whatever they already believed, making the art of changing one's mind practically extinct.</p>
+      <p>The chaos was not new. The chaos had always been there. What was new was the volume — the sheer relentless decibel level of modern human experience, where every opinion required a platform, every grievance a hashtag, and every moment of potential quiet was immediately colonized by a notification.</p>
+      <blockquote>"Silence," Vishnu told the assembled gods, "has become the rarest luxury on Earth. More precious than gold. More sought-after than wisdom."</blockquote>
+      <p>Slide two was titled: <em>"Nevertheless, They Persist."</em></p>
+      <p>Because between all the chaos — tucked between the headlines and the hot takes and the endless scrolling — something stubborn kept happening. People kept falling in love. Artists kept making things. Children kept asking impossible questions adults couldn't answer. Someone, somewhere, was always writing something down.</p>
+      <p>The gods watched. The chaos continued. And the divine verdict, unchanged: <em>"Do not delete. They're still figuring it out."</em></p>
+      <div style="text-align:center; margin-top:3rem; color:var(--gold); opacity:0.5; letter-spacing:1rem;">✦ ✦ ✦</div>
+    </div>
+    <div style="margin-top:3rem;">
+      <a href="#" class="btn btn-ghost" onclick="showPage('satire'); return false;">← Back to Satire</a>
+    </div>
+  </div>
+</div>
+
+<div id="page-article-independence" class="page">
+  <div class="article-view">
+    <p class="breadcrumb">
+      <a href="#" onclick="showPage('home'); return false;">Home</a> / 
+      <a href="#" onclick="showPage('satire'); return false;">#Satire</a> / 
+      A Divine Request — Independence Day Special
+    </p>
+    <p class="article-tag">Satire · A Divine Request Series · Vol. 3 · 🇮🇳</p>
+    <h1 class="article-title">A Divine Request — Indian Independence Day Special</h1>
+    <div class="article-meta">
+      <span>@HINDUTV</span>
+      <span>·</span>
+      <span>Independence Day Edition</span>
+      <span>·</span>
+      <span>Mr. Fiction Zone</span>
+    </div>
+    <div class="article-body">
+      <p class="drop-cap">Lord Vishnu has a special wish for his exclusive members — Indians. What chaos will unfold now?</p>
+      <p>On the 15th of August, as the tricolour rose with practiced grace and schoolchildren rehearsed patriotic songs they'd been singing since they were four, Lord Vishnu convened an emergency meeting of the South Asian Divine Council.</p>
+      <blockquote>"Seventy-eight years," he said, holding up the divine ledger. "Seventy-eight years of Independence, and they are still arguing about who is more patriotic."</blockquote>
+      <p>The argument, as Narad Muni dutifully reported, had moved online. Twitter — renamed but not reformed — was ablaze. Who was standing for the national anthem? Who was sitting? Who was eating the wrong food? Who had posted their patriotism at the correct time of day? The nation's identity, it seemed, was less a shared inheritance and more a daily competitive examination.</p>
+      <p>Meanwhile, in the background of the performative patriotism, things of remarkable quiet beauty were also happening. A farmer in Maharashtra was up before dawn, tending to crops that would feed a city that would never know his name. A teacher in a small village was explaining democracy to children who took it more seriously than most adults. A street-food vendor in Old Delhi had, through some alchemy of spice and time, created a dish so perfect it briefly united two strangers who had nothing else in common.</p>
+      <blockquote>"India," Vishnu told the council, "is not a country. It is an argument that refuses to end — and somehow, that is also its greatest strength."</blockquote>
+      <p>The divine wish, delivered through the usual channels (a soft wind, a meaningful coincidence, a dream slightly too vivid to ignore), was simple: <em>Remember what Independence actually means. It's not just freedom from something. It's freedom to become something.</em></p>
+      <p>The flag kept rising. The argument kept going. And somewhere beneath the noise, always, the quiet hum of a civilization that has survived everything — including itself.</p>
+      <p><em>Happy Independence Day.</em></p>
+      <div style="text-align:center; margin-top:3rem; color:var(--gold); opacity:0.5; letter-spacing:1rem;">✦ ✦ ✦</div>
+    </div>
+    <div style="margin-top:3rem;">
+      <a href="#" class="btn btn-ghost" onclick="showPage('satire'); return false;">← Back to Satire</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HORROR PAGE ══════════════ -->
+<div id="page-horror" class="page">
+  <div class="stories-header" style="border-bottom-color:rgba(139,26,26,0.3);">
+    <p class="breadcrumb"><a href="#" onclick="showPage('home'); return false;">Home</a> / # Horror Stories</p>
+    <div class="section-label" style="color:var(--blood);">Category 02</div>
+    <h1 class="section-title" style="font-family:'Playfair Display',serif; font-size:clamp(2.5rem,6vw,5rem);">
+      # Horror <em>Stories</em>
+    </h1>
+    <p style="font-style:italic; color:rgba(245,240,232,0.55); max-width:600px; margin-top:1rem;">
+      You have discovered a vault where whispers linger and shadows breathe. Here, horror seeps from every nook and cranny like candle wax in a deserted chapel, ghosts tell their incomplete stories, and demons trade secrets.
+    </p>
+  </div>
+  <div class="stories-list">
+    <div style="text-align:center; padding:5rem 0; color:rgba(245,240,232,0.25);">
+      <p style="font-size:4rem; margin-bottom:1.5rem;">👻</p>
+      <p style="font-family:'Playfair Display',serif; font-size:1.8rem; font-style:italic; margin-bottom:1rem; color:rgba(245,240,232,0.5);">The shadows are still being written.</p>
+      <p style="font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.2em;">COMING SOON — STORIES ARE IN PROGRESS</p>
+      <br><br>
+      <p style="font-size:1rem; color:rgba(245,240,232,0.4); max-width:400px; margin:0 auto;">Have a horror story to share? This vault is waiting for your nightmares.</p>
+      <a href="#" class="btn btn-ghost" onclick="showPage('contact'); return false;" style="margin-top:2rem; display:inline-block; border-color:var(--blood); color:var(--blood);">Submit Your Story</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ OPERATION HUMANITY PAGE ══════════════ -->
+<div id="page-ophumanity" class="page">
+  <div class="op-humanity-header">
+    <div class="op-bg"></div>
+    <p class="breadcrumb" style="font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; color:rgba(245,240,232,0.4); margin-bottom:1.5rem;">
+      <a href="#" onclick="showPage('home'); return false;" style="color:var(--ghost); text-decoration:none;">Home</a> / #Operation Humanity
+    </p>
+    <div class="section-label" style="color:var(--ghost);">Category 03 · Sci-Fi Series</div>
+    <h1 class="section-title" style="font-family:'Playfair Display',serif; font-size:clamp(2.5rem,6vw,5rem);">
+      #Operation<br><em>Humanity</em>
+    </h1>
+    <p style="font-style:italic; color:rgba(245,240,232,0.55); max-width:640px; margin-top:1.5rem; font-size:1.1rem; line-height:1.8;">
+      In a distant future, after Earth succumbs to humanity's cruelty and environmental negligence, people discover a new beginning on <strong style="color:var(--ghost);">Rablox</strong> — an uncharted Earth-like planet. But can humanity sustain this fresh opportunity, or will the cycle of destruction inevitably repeat itself?
+    </p>
+    <p style="color:rgba(245,240,232,0.45); max-width:640px; margin-top:1.5rem; font-size:0.95rem; line-height:1.8;">
+      From surfing in the wastelands to venturing into the complex political framework of a planet which re-breathed life into humanity. A planet that revamped the hope of a race whose entire history was ruined by their own actions, yet remains largely unexplored, housing myriads of mysteries hidden in its sands — lingering to be unearthed.
+    </p>
+  </div>
+
+  <div style="padding: 3rem; max-width:1200px; margin:0 auto;">
+    <div class="section-label" style="color:var(--ghost);">Characters</div>
+    <h2 class="section-title" style="margin-bottom:2.5rem;">Meet the world<br><em>of Rablox.</em></h2>
+
+    <div class="rablox-grid" style="padding:0;">
+      <div class="char-card">
+        <p class="char-num">CHARACTER 01</p>
+        <h3 class="char-name">Zetron</h3>
+        <p class="char-title">The Commander</p>
+        <p class="char-desc">The iron will of a new civilization. Zetron commands with the authority of someone who has seen what happens when authority collapses — and is determined not to let it happen again on Rablox. Strategic, scarred, and carrying the weight of a species that nearly destroyed itself.</p>
+      </div>
+      <div class="char-card">
+        <p class="char-num">CHARACTER 02</p>
+        <h3 class="char-name">Rakun</h3>
+        <p class="char-title" style="color:var(--gold);">The God</p>
+        <p class="char-desc">Mysterious, ancient, and bound to Rablox in ways that defy human understanding. Rakun exists at the intersection of myth and reality — a force the colonists cannot explain, cannot control, and cannot afford to ignore. Is Rakun a saviour, a test, or something else entirely?</p>
+      </div>
+    </div>
+
+    <div style="margin-top:4rem; padding:3rem; border:1px solid rgba(168,184,200,0.15); background:rgba(168,184,200,0.03);">
+      <div class="section-label" style="color:var(--ghost);">Series Status</div>
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; margin-bottom:1rem;">The story is unfolding.</h3>
+      <p style="color:rgba(245,240,232,0.6); max-width:560px; font-size:0.95rem; line-height:1.8; margin-bottom:2rem;">Episodes of #Operation Humanity are being written. Follow our contact channels to be notified when new chapters of the Rablox saga are released.</p>
+      <a href="#" class="btn btn-ghost" onclick="showPage('contact'); return false;" style="border-color:var(--ghost); color:var(--ghost);">Follow the Series →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CONTACT PAGE ══════════════ -->
+<div id="page-contact" class="page">
+  <div class="stories-header">
+    <p class="breadcrumb"><a href="#" onclick="showPage('home'); return false;">Home</a> / Contact</p>
+    <div class="section-label">Get in Touch</div>
+    <h1 class="section-title" style="font-family:'Playfair Display',serif; font-size:clamp(2.5rem,6vw,5rem);">
+      Let's create<br><em>together.</em>
+    </h1>
+  </div>
+  <div style="padding:3rem; max-width:1200px; margin:0 auto;">
+    <div class="contact-grid">
+      <div>
+        <p style="font-size:1.05rem; color:rgba(245,240,232,0.7); margin-bottom:3rem; line-height:1.8;">
+          Got a story? A poem? A wild idea that's been rattling around in your head? Reach out through any of the channels below. This platform was built for exactly what you're carrying.
+        </p>
+        <div class="contact-item">
+          <span class="contact-label">Email</span>
+          <span class="contact-value"><a href="mailto:theaigeneratorak123@gmail.com">theaigeneratorak123@gmail.com</a></span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">Instagram — Mr. Fiction Zone</span>
+          <span class="contact-value"><a href="https://www.instagram.com/mr.fiction11" target="_blank">@mr.fiction11</a></span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-label">Instagram — Personal</span>
+          <span class="contact-value"><a href="https://www.instagram.com/altius_ak2/" target="_blank">@altius_ak2</a></span>
+        </div>
+      </div>
+      <div class="contact-cta-box">
+        <h3>Submit Your Work</h3>
+        <p>Got any ideas? Any story? Poetry? Or any other interesting idea? Mr. Fiction Zone is always looking for new voices — aspiring writers who want their work edited, shared, and recognised.</p>
+        <p style="font-size:0.9rem; color:rgba(245,240,232,0.5); margin-bottom:2rem;">Kindly DM on Instagram or send an email with your draft, and we'll be in touch.</p>
+        <a href="https://www.instagram.com/mr.fiction11" target="_blank" class="btn btn-primary" style="cursor:pointer;">DM on Instagram</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span>© 2025 Mr. Fiction Zone — All Rights Reserved</span>
+  <span>Every word, a human thought.</span>
+  <a href="#" onclick="showPage('home'); return false;">Back to Top ↑</a>
+</footer>
+
+<script>
+  // ─── Custom Cursor ───
+  const cursor = document.getElementById('cursor');
+  const trail = document.getElementById('cursorTrail');
+  let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 6 + 'px';
+    cursor.style.top = my - 6 + 'px';
+    setTimeout(() => {
+      trail.style.left = mx - 18 + 'px';
+      trail.style.top = my - 18 + 'px';
+    }, 80);
+  });
+  document.addEventListener('mousedown', () => cursor.style.transform = 'scale(2)');
+  document.addEventListener('mouseup', () => cursor.style.transform = 'scale(1)');
+
+  // ─── Page Navigation ───
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const map = {
+      'home': 'page-home',
+      'satire': 'page-satire',
+      'horror': 'page-horror',
+      'ophumanity': 'page-ophumanity',
+      'contact': 'page-contact',
+      'explore-page': 'page-home'
+    };
+    const target = map[id] || id;
+    const el = document.getElementById(target);
+    if (el) {
+      el.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (id === 'explore-page') setTimeout(() => scrollToSection('explore'), 400);
+    }
+    triggerReveal();
+  }
+
+  function showArticle(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById('page-article-' + id);
+    if (el) { el.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  }
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ─── Scroll Reveal ───
+  function triggerReveal() {
+    setTimeout(() => {
+      const reveals = document.querySelectorAll('.page.active .reveal');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      reveals.forEach(r => io.observe(r));
+    }, 50);
+  }
+
+  // Initial reveal
+  window.addEventListener('load', triggerReveal);
+  window.addEventListener('scroll', () => {
+    document.querySelectorAll('.page.active .reveal:not(.visible)').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.88) el.classList.add('visible');
+    });
+  });
+</script>
+</body>
+</html>
